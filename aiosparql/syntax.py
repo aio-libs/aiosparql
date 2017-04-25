@@ -32,8 +32,11 @@ class Node(dict):
         self.subject = subject
         super(Node, self).__init__(base_dict)
 
+    def __str__(self):
+        return "".join(self._output_triples())
+
     def _output_triples(self):
-        it = iter(self.items())
+        it = iter(sorted(self.items(), key=self._group_key))
         p, o = next(it)
         yield "%s %s %s" % (self.subject, p, escape_any(o))
         for p, o in it:
@@ -44,8 +47,8 @@ class Node(dict):
             yield "    %s %s" % (p, escape_any(o))
         yield " ."
 
-    def __str__(self):
-        return "".join(self._output_triples())
+    def _group_key(self, x):
+        return str(x[0])
 
 
 class Triples(list):

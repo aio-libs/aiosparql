@@ -1,0 +1,10 @@
+sudo: false
+language: python
+python:
+  - "3.6"
+env:
+    - TOX_ENV=flake8
+install:
+    - pip install tox
+script:
+    - tox -e $TOX_ENV

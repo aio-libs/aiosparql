@@ -6,10 +6,13 @@ from aiosparql.syntax import IRI, Literal, Node, RDF, Triples, UNDEF
 
 class Syntax(unittest.TestCase):
     def test_node(self):
-        node = Node("john", ([(RDF.type, "doe"), ("foo", "bar")]))
+        node = Node("john", {
+            RDF.type: "doe",
+            "foo": "bar",
+        })
         self.assertEqual(str(node), dedent("""\
-            john rdf:type "doe" ;
-                foo "bar" ."""))
+            john foo "bar" ;
+                rdf:type "doe" ."""))
 
     def test_triples(self):
         triples = Triples([("john", RDF.type, "doe")])

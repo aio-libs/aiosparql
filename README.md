@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/tenforce/sparql-aiohttp.svg?branch=master)](https://travis-ci.org/tenforce/sparql-aiohttp)
+[![codecov](https://codecov.io/gh/tenforce/sparql-aiohttp/branch/master/graph/badge.svg)](https://codecov.io/gh/tenforce/sparql-aiohttp)
+
 An asynchronous SPARQL library using aiohttp
 ============================================
 
@@ -59,3 +62,22 @@ print(escape_any("foo")) # "foo"
 print(escape_any(5)) # "5"
 print(escape_any(5.5)) # "5.5"^^xsd:double
 ```
+
+Installation
+------------
+
+ *  User space installation
+
+    ```
+    easy_install --user aiosparql
+    ```
+
+ *  System wide installation
+
+    ```
+    easy_install aiosparql
+    ```
+
+### Requirements
+
+ *  Python >= 3.5

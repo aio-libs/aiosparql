@@ -55,7 +55,7 @@ class Triples(list):
     """
     A magical list of tuples (s, p, o) that be printed to a SPARQL query.
     """
-    def __init__(self, value):
+    def __init__(self, value=[]):
         assert all(isinstance(x, (tuple, Node)) for x in value), \
             "only tuples and Node are accepted, received: %r" % value
         assert all(len(x) == 3 for x in value if isinstance(x, tuple)), \

@@ -27,10 +27,12 @@ def escape_any(value):
         true, which is the same as "true"^^xsd:boolean
         false, which is the same as "false"^^xsd:boolean
     """
-    from .syntax import RDFTerm
+    from .syntax import Node, RDFTerm
 
     if isinstance(value, type):
         raise TypeError("object %r is not an instance" % value)
+    elif isinstance(value, Node):
+        return value.subject
     elif isinstance(value, bool):
         return escape_boolean(value)
     elif isinstance(value, datetime):

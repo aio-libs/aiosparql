@@ -5,7 +5,7 @@ import unittest
 from aiosparql.escape import (
     escape_any, escape_boolean, escape_date, escape_datetime, escape_float,
     escape_time, escape_string)
-from aiosparql.syntax import RDFTerm
+from aiosparql.syntax import Node, RDFTerm
 
 
 class Escape(unittest.TestCase):
@@ -23,6 +23,7 @@ class Escape(unittest.TestCase):
         self.assertEqual(escape_any(Decimal(5.5)), '5.5')
         self.assertEqual(escape_any(5.5), '"5.5"^^xsd:double')
         self.assertEqual(escape_any(RDFTerm("raw")), 'raw')
+        self.assertEqual(escape_any(Node("subject", {})), 'subject')
         with self.assertRaises(TypeError):
             escape_any(int)
 

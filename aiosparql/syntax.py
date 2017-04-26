@@ -23,20 +23,25 @@ class RDFTerm:
         return str(self.value)
 
 
-class Node(dict):
+class Node(list):
     """
-    A magical dict (predicate, object) with a subject that can be printed to a
+    A magical list of tuples (p, o) with a subject that can be printed to a
     SPARQL query.
+
+    It can also accept a dict in argument.
     """
-    def __init__(self, subject, base_dict):
+    def __init__(self, subject, value=[]):
         self.subject = subject
-        super(Node, self).__init__(base_dict)
+        if isinstance(value, dict):
+            super(Node, self).__init__(value.items())
+        else:
+            super(Node, self).__init__(value)
 
     def __str__(self):
         return "".join(self._output_triples())
 
     def _output_triples(self):
-        it = iter(sorted(self.items(), key=self._group_key))
+        it = iter(sorted(self, key=self._group_key))
         p, o = next(it)
         yield "%s %s %s" % (self.subject, p, escape_any(o))
         for p, o in it:

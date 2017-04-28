@@ -27,26 +27,12 @@ def escape_any(value):
         true, which is the same as "true"^^xsd:boolean
         false, which is the same as "false"^^xsd:boolean
     """
-    from .syntax import Node, RDFTerm
-
     if isinstance(value, type):
         raise TypeError("object %r is not an instance" % value)
-    elif isinstance(value, Node):
-        return value.subject
-    elif isinstance(value, bool):
-        return escape_boolean(value)
-    elif isinstance(value, datetime):
-        return escape_datetime(value)
-    elif isinstance(value, date):
-        return escape_date(value)
-    elif isinstance(value, time):
-        return escape_time(value)
-    elif isinstance(value, float):
-        return escape_float(value)
-    elif isinstance(value, (RDFTerm, int, Decimal)):
-        return str(value)
-    else:
-        return escape_string(str(value))
+    for type_, escape_method in escapers:
+        if isinstance(value, type_):
+            return escape_method(value)
+    return escape_string(str(value))
 
 
 _string_replacements = [
@@ -86,3 +72,14 @@ def escape_float(value):
     https://docs.python.org/3.6/library/stdtypes.html#numeric-types-int-float-complex
     """
     return '"%s"^^xsd:double' % value
+
+
+escapers = [
+    (bool, escape_boolean),
+    (datetime, escape_datetime),
+    (date, escape_date),
+    (time, escape_time),
+    (float, escape_float),
+    (int, str),
+    (Decimal, str),
+]

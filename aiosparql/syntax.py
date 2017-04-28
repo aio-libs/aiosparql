@@ -2,7 +2,7 @@ from itertools import groupby
 import re
 from textwrap import indent
 
-from .escape import escape_any, escape_string
+from .escape import escape_any, escape_string, escapers
 
 
 __all__ = [
@@ -208,3 +208,9 @@ class RDF(Namespace):
     first = PrefixedName
     rest = PrefixedName
     XMLLiteral = PrefixedName
+
+
+escapers.extend([
+    (Node, lambda x: x.subject),
+    (RDFTerm, str),
+])

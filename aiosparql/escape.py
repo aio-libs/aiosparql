@@ -4,7 +4,7 @@ from decimal import Decimal
 
 __all__ = [
     "escape_any", "escape_string", "escape_datetime", "escape_date",
-    "escape_time", "escape_boolean",
+    "escape_time", "escape_boolean", "escape_float",
 ]
 
 

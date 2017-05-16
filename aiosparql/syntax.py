@@ -129,7 +129,8 @@ class Triples(list):
 
 
 class PrefixedName(RDFTerm):
-    def __init__(self, prefix_label, local_part):
+    def __init__(self, base_iri, prefix_label, local_part):
+        self.base_iri = base_iri
         self.prefix_label = prefix_label
         self.local_part = local_part
 
@@ -144,10 +145,13 @@ class PrefixedName(RDFTerm):
             return (self.prefix_label == other.prefix_label and
                     self.local_part == other.local_part)
         else:
-            return str(self) == other
+            return self.iri() == other
 
     def __hash__(self):
         return hash((self.prefix_label, self.local_part))
+
+    def iri(self):
+        return IRI(self.base_iri + self.local_part)
 
 
 class IRI(RDFTerm):
@@ -211,10 +215,15 @@ class MetaNamespace(type):
 
     def __new__(mcs, name, bases, nmspc):
         if bases:
-            assert '__iri__' in nmspc
+            assert '__iri__' in nmspc, \
+                "missing attribute __iri__ for class %s" % name
+            iri = nmspc['__iri__']
             prefix_label = nmspc.get('__prefix_label__', name.lower())
             nmspc = {
-                k: PrefixedName(prefix_label, k) if v is PrefixedName else v
+                k: (
+                    PrefixedName(iri, prefix_label, k)
+                    if v is PrefixedName else v
+                )
                 for k, v in nmspc.items()
             }
             nmspc['__prefix_label__'] = prefix_label

@@ -22,6 +22,15 @@ class RDFTerm:
     def __str__(self):
         return str(self.value)
 
+    def __eq__(self, other):
+        if isinstance(other, RDFTerm):
+            return self.value == other.value
+        else:
+            return self.value == other
+
+    def __hash__(self):
+        return hash(self.value)
+
 
 class Node(list):
     """
@@ -130,6 +139,16 @@ class PrefixedName(RDFTerm):
     def __repr__(self):
         return "<PrefixedName %s>" % self
 
+    def __eq__(self, other):
+        if isinstance(other, PrefixedName):
+            return (self.prefix_label == other.prefix_label and
+                    self.local_part == other.local_part)
+        else:
+            return str(self) == other
+
+    def __hash__(self):
+        return hash((self.prefix_label, self.local_part))
+
 
 class IRI(RDFTerm):
     __re_invalid_chars__ = re.compile('[<>"{}|^`[-\\]\x00-\x20]')
@@ -145,6 +164,15 @@ class IRI(RDFTerm):
     def __repr__(self):
         return "<IRI %s>" % self.value
 
+    def __eq__(self, other):
+        if isinstance(other, IRI):
+            return self.value == other.value
+        else:
+            return self.value == other
+
+    def __hash__(self):
+        return hash(self.value)
+
 
 class Literal(RDFTerm):
     def __init__(self, value, lang=None):
@@ -154,6 +182,15 @@ class Literal(RDFTerm):
     def __str__(self):
         return "%s@%s" % (escape_string(self.value), self.lang)
 
+    def __eq__(self, other):
+        if isinstance(other, Literal):
+            return (self.value == other.value and self.lang == other.lang)
+        else:
+            return self.value == other
+
+    def __hash__(self):
+        return hash((self.value, self.lang))
+
 
 class UNDEF(RDFTerm):
     def __init__(self):
@@ -161,6 +198,12 @@ class UNDEF(RDFTerm):
 
     def __str__(self):
         return "UNDEF"
+
+    def __eq__(self, other):
+        return isinstance(other, UNDEF)
+
+    def __hash__(self):
+        return hash(UNDEF)
 
 
 class MetaNamespace(type):

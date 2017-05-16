@@ -53,11 +53,11 @@ class Syntax(unittest.TestCase):
                          2)
 
     def test_prefixed_name(self):
-        self.assertEqual(PrefixedName("foo", "bar", "baz"), IRI("foobaz"))
-        self.assertEqual(PrefixedName("foo", "bar", "baz"),
-                         PrefixedName("foo", "bar", "baz"))
-        self.assertEqual(len(set([PrefixedName("foo", "bar", "baz"),
-                                  PrefixedName("foo", "bar", "baz")])),
+        self.assertEqual(PrefixedName(IRI("foo"), "bar", "baz"), IRI("foobaz"))
+        self.assertEqual(PrefixedName(IRI("foo"), "bar", "baz"),
+                         PrefixedName(IRI("foo"), "bar", "baz"))
+        self.assertEqual(len(set([PrefixedName(IRI("foo"), "bar", "baz"),
+                                  PrefixedName(IRI("foo"), "bar", "baz")])),
                          1)
 
     def test_rdf_term(self):

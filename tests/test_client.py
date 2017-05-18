@@ -3,7 +3,7 @@ import json
 from textwrap import dedent
 import unittest
 
-from aiosparql.client import SPARQLQueryFormatter
+from aiosparql.client import SPARQLQueryFormatter, SPARQLRequestFailed
 from aiosparql.syntax import IRI, RDF, Triples
 from aiosparql.test_utils import AioSPARQLTestCase, unittest_run_loop
 
@@ -13,6 +13,10 @@ async def sparql_endpoint(request):
         "post": dict((await request.post()).items()),
         "path": request.path,
     }
+    if "failure" in result['post'].get('query', ""):
+        raise web.HTTPBadRequest()
+    if "failure" in result['post'].get('update', ""):
+        raise web.HTTPBadRequest()
     return web.Response(text=json.dumps(result),
                         content_type="application/json")
 
@@ -52,6 +56,8 @@ class Client(AioSPARQLTestCase):
                 john rdf:type "doe" ;
                     p "o" .
             }"""))
+        with self.assertRaises(SPARQLRequestFailed):
+            await self.client.query("failure")
 
     @unittest_run_loop
     async def test_update(self):
@@ -73,6 +79,8 @@ class Client(AioSPARQLTestCase):
                 john rdf:type "doe" ;
                     p "o" .
             }"""))
+        with self.assertRaises(SPARQLRequestFailed):
+            await self.client.update("failure")
 
 
 class Formatter(unittest.TestCase):

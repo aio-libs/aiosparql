@@ -1,6 +1,7 @@
 import aiohttp
 from asyncio import AbstractEventLoop
 import logging
+from math import ceil, log10
 from os import environ as ENV
 import re
 from string import Formatter
@@ -106,19 +107,30 @@ class SPARQLClient(aiohttp.ClientSession):
         query_formatter = SPARQLQueryFormatter()
         return query_formatter.vformat("\n".join(lines), args, query_args)
 
+    def _pretty_print_query(self, query: str) -> str:
+        query = query.rstrip()
+        ln_indent = ceil(log10(query.count("\n")))
+        return "\n".join(
+            ("{:-%dd}: {}" % ln_indent).format(i, x)
+            for i, x in enumerate(query.split("\n"), 1)
+        )
+
     async def query(self, query: str, *args, **keywords) -> dict:
         headers = {
             "Accept": "application/json",
         }
         full_query = self._prepare_query(query, *args, **keywords)
-        logger.debug("Sending SPARQL query to %s: %r",
-                     self.endpoint, full_query)
+        logger.debug("Sending SPARQL query to %s: \n%s\n%s",
+                     self.endpoint, self._pretty_print_query(full_query),
+                     "=" * 40)
         async with self.post(self.endpoint, data={"query": full_query},
                              headers=headers) as resp:
             try:
                 resp.raise_for_status()
             except aiohttp.client_exceptions.ClientResponseError as exc:
                 explanation = await resp.text()
+                logger.debug("Server responded:\n%s\n%s",
+                             explanation, "=" * 40)
                 raise SPARQLRequestFailed(
                     code=exc.code, message=exc.message,
                     explanation=explanation)
@@ -129,14 +141,17 @@ class SPARQLClient(aiohttp.ClientSession):
             "Accept": "application/json",
         }
         full_query = self._prepare_query(query, *args, **keywords)
-        logger.debug("Sending SPARQL query to %s: %r",
-                     self.endpoint, full_query)
+        logger.debug("Sending SPARQL query to %s:\n%s\n%s",
+                     self.endpoint, self._pretty_print_query(full_query),
+                     "=" * 40)
         async with self.post(self.update_endpoint, data={"update": full_query},
                              headers=headers) as resp:
             try:
                 resp.raise_for_status()
             except aiohttp.client_exceptions.ClientResponseError as exc:
                 explanation = await resp.text()
+                logger.debug("Server responded:\n%s\n%s",
+                             explanation, "=" * 40)
                 raise SPARQLRequestFailed(
                     code=exc.code, message=exc.message, headers=exc.headers,
                     explanation=explanation)

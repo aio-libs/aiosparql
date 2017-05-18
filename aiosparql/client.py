@@ -24,7 +24,7 @@ class SPARQLRequestFailed(aiohttp.client_exceptions.ClientResponseError):
 
     def __str__(self):
         base_message = super(SPARQLRequestFailed, self).__str__()
-        return "%s\nExplanation:\n%s" % (base_message, self.explanation)
+        return "%s, explanation=%r" % (base_message, self.explanation)
 
 
 class SPARQLQueryFormatter(Formatter):

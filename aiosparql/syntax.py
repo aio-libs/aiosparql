@@ -177,6 +177,9 @@ class IRI(RDFTerm):
     def __hash__(self):
         return hash(self.value)
 
+    def __add__(self, other):
+        return IRI("%s%s" % (self.value, other))
+
 
 class Literal(RDFTerm):
     def __init__(self, value, lang=None):

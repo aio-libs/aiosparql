@@ -36,6 +36,8 @@ class Syntax(unittest.TestCase):
         self.assertEqual(len(set([IRI("http://example.org"),
                                   IRI("http://example.org")])),
                          1)
+        self.assertEqual(IRI("http://example.org/") + "boo",
+                         IRI("http://example.org/boo"))
 
     def test_undef(self):
         self.assertEqual(str(UNDEF()), "UNDEF")

@@ -59,6 +59,11 @@ class Syntax(unittest.TestCase):
         self.assertEqual(len(set([PrefixedName(IRI("foo"), "bar", "baz"),
                                   PrefixedName(IRI("foo"), "bar", "baz")])),
                          1)
+        mapping = {
+            "foobaz": "ok"
+        }
+        self.assertEqual(
+            mapping.get(PrefixedName(IRI("foo"), "bar", "baz"), "notok"), "ok")
 
     def test_rdf_term(self):
         self.assertEqual(RDFTerm("foo"), RDFTerm("foo"))

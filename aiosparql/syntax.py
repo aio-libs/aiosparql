@@ -148,7 +148,7 @@ class PrefixedName(RDFTerm):
             return self.iri() == other
 
     def __hash__(self):
-        return hash((self.prefix_label, self.local_part))
+        return hash(self.iri())
 
     def iri(self):
         return IRI(self.base_iri.value + self.local_part)

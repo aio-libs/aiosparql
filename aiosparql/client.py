@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 class SPARQLRequestFailed(aiohttp.client_exceptions.ClientResponseError):
-    def __init__(self, *, code=None, message='', headers=None,
-                 explanation=None):
+    def __init__(self, request_info, history, *,
+                 code=0, message='', headers=None, explanation=None):
         super(SPARQLRequestFailed, self).__init__(
-            code=code, message=message, headers=headers)
+            request_info, history, code=code, message=message, headers=headers)
         self.explanation = explanation
 
     def __str__(self):
@@ -132,6 +132,7 @@ class SPARQLClient(aiohttp.ClientSession):
                 logger.debug("Server responded:\n%s\n%s",
                              explanation, "=" * 40)
                 raise SPARQLRequestFailed(
+                    exc.request_info, exc.history,
                     code=exc.code, message=exc.message,
                     explanation=explanation)
             return await resp.json()
@@ -153,6 +154,7 @@ class SPARQLClient(aiohttp.ClientSession):
                 logger.debug("Server responded:\n%s\n%s",
                              explanation, "=" * 40)
                 raise SPARQLRequestFailed(
+                    exc.request_info, exc.history,
                     code=exc.code, message=exc.message, headers=exc.headers,
                     explanation=explanation)
             return await resp.json()

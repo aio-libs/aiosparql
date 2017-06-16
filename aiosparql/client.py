@@ -1,5 +1,4 @@
 import aiohttp
-from asyncio import AbstractEventLoop
 import logging
 from math import ceil, log10
 from os import environ as ENV
@@ -85,8 +84,8 @@ class SPARQLClient(aiohttp.ClientSession):
                  update_endpoint: Optional[str] = None,
                  prefixes: Optional[List[Namespace]] = None,
                  graph: Optional[str] = None,
-                 loop: Optional[AbstractEventLoop] = None):
-        super(SPARQLClient, self).__init__(loop=loop)
+                 **kwargs):
+        super(SPARQLClient, self).__init__(**kwargs)
         self.endpoint = endpoint or ENV['MU_SPARQL_ENDPOINT']
         self.graph = graph or IRI(ENV['MU_APPLICATION_GRAPH'])
         self.update_endpoint = update_endpoint or self.endpoint

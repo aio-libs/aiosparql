@@ -17,6 +17,27 @@ class Syntax(unittest.TestCase):
                 foo "baz" ;
                 rdf:type "doe" ."""))
 
+    def test_node_in_node(self):
+        node1 = Node("john", [
+            ("foo", "bar"),
+        ])
+        node2 = Node("jane", [
+            ("foo", "bar"),
+        ])
+        node3 = Node("parent", [
+            ("child1", node1),
+            ("child2", node2),
+            ("foo", "bar"),
+        ])
+        self.assertEqual(str(node3), dedent("""\
+            parent child1 john ;
+                child2 jane ;
+                foo "bar" .
+
+            jane foo "bar" .
+
+            john foo "bar" ."""))
+
     def test_triples(self):
         triples = Triples([("john", RDF.type, "doe")])
         triples.append(("john", "foo", "bar"))

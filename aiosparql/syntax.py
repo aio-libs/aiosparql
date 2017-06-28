@@ -50,16 +50,24 @@ class Node(list):
         return "".join(self._output_triples())
 
     def _output_triples(self):
+        extra_nodes = []
         it = iter(sorted(self, key=self._group_key))
         p, o = next(it)
         yield "%s %s %s" % (self.subject, p, escape_any(o))
+        if isinstance(o, Node):
+            extra_nodes.append(o)
         for p, o in it:
             assert p is not None, "predicate not defined"
             if o is None:
                 continue
             yield " ;\n"
             yield "    %s %s" % (p, escape_any(o))
+            if isinstance(o, Node):
+                extra_nodes.append(o)
         yield " ."
+        for node in sorted(extra_nodes, key=lambda x: x.subject):
+            yield "\n\n"
+            yield str(node)
 
     def _group_key(self, x):
         return str(x[0])

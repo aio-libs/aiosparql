@@ -18,10 +18,10 @@ class Syntax(unittest.TestCase):
                 rdf:type "doe" ."""))
 
     def test_node_in_node(self):
-        node1 = Node("john", [
+        node1 = Node(IRI("john"), [
             ("foo", "bar"),
         ])
-        node2 = Node("jane", [
+        node2 = Node(IRI("jane"), [
             ("foo", "bar"),
         ])
         node3 = Node("parent", [
@@ -30,13 +30,13 @@ class Syntax(unittest.TestCase):
             ("foo", "bar"),
         ])
         self.assertEqual(str(node3), dedent("""\
-            parent child1 john ;
-                child2 jane ;
+            parent child1 <john> ;
+                child2 <jane> ;
                 foo "bar" .
 
-            jane foo "bar" .
+            <jane> foo "bar" .
 
-            john foo "bar" ."""))
+            <john> foo "bar" ."""))
 
     def test_triples(self):
         triples = Triples([("john", RDF.type, "doe")])

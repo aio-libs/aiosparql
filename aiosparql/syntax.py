@@ -65,7 +65,7 @@ class Node(list):
             if isinstance(o, Node):
                 extra_nodes.append(o)
         yield " ."
-        for node in sorted(extra_nodes, key=lambda x: x.subject):
+        for node in sorted(extra_nodes, key=lambda x: str(x.subject)):
             yield "\n\n"
             yield str(node)
 

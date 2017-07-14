@@ -8,9 +8,11 @@ from aiosparql.syntax import (
 class Syntax(unittest.TestCase):
     def test_node(self):
         node = Node("john", [
+            ("_first", None),
             (RDF.type, "doe"),
             ("foo", "bar"),
             ("foo", "baz"),
+            ("foo", None),
         ])
         self.assertEqual(str(node), dedent("""\
             john foo "bar" ;

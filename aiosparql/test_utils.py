@@ -21,4 +21,4 @@ class AioSPARQLTestCase(AioHTTPTestCase):
 
     @asyncio.coroutine
     def _get_client(self, app):
-        return TestSPARQLClient(self.app, loop=self.loop, **self.client_kwargs)
+        return TestSPARQLClient(app, loop=self.loop, **self.client_kwargs)

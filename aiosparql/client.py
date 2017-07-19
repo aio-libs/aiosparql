@@ -89,16 +89,25 @@ class SPARQLClient(aiohttp.ClientSession):
         self.endpoint = endpoint or ENV['MU_SPARQL_ENDPOINT']
         self.graph = graph or IRI(ENV['MU_APPLICATION_GRAPH'])
         self.update_endpoint = update_endpoint or self.endpoint
-        self.prefixes = (
-            MetaNamespace.prefixes.values() if prefixes is None else prefixes
-        )
+        self._generate_prefixes(prefixes)
+
+    def _generate_prefixes(self, prefixes):
+        header = [
+            "PREFIX %s: %s" % (x.__prefix_label__, x.__iri__)
+            for x in sorted(MetaNamespace.prefixes.values(),
+                            key=lambda x: x.__prefix_label__)
+        ]
+        if prefixes:
+            header.append("")
+            header.extend([
+                "PREFIX %s: %s" % (x[0], x[1])
+                for x in sorted(prefixes.items(), key=lambda x: x[0])
+            ])
+        self._prefixes_header = "\n".join(header) + "\n"
 
     def _prepare_query(self, query: str, *args, **keywords) -> dict:
-        lines = [
-            "PREFIX %s: %s" % (x.__prefix_label__, x.__iri__)
-            for x in self.prefixes
-        ]
-        lines.extend(["", dedent(query).strip()])
+        lines = [self._prefixes_header]
+        lines.extend([dedent(query).strip()])
         query_args = {
             'graph': self.graph,
         }

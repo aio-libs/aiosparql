@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://travis-ci.org/tenforce/sparql-aiohttp.svg?branch=master)](https://travis-ci.org/tenforce/sparql-aiohttp)
-[![codecov](https://codecov.io/gh/tenforce/sparql-aiohttp/branch/master/graph/badge.svg)](https://codecov.io/gh/tenforce/sparql-aiohttp)
+[![Build Status](https://travis-ci.org/aio-libs/aiosparql.svg?branch=master)](https://travis-ci.org/aio-libs/aiosparql)
+[![codecov](https://codecov.io/gh/aio-libs/aiosparql/branch/master/graph/badge.svg)](https://codecov.io/gh/aio-libs/aiosparql)
 
 An asynchronous SPARQL library using aiohttp
 ============================================

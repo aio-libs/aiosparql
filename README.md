@@ -82,3 +82,8 @@ Installation
 ### Requirements
 
  *  Python >= 3.5
+
+Credits
+-------
+
+This software has been produced by [Dacota One](http://www.dacota.one/).

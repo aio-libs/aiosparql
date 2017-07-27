@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/tenforce/sparql-aiohttp.svg?branch=master)](https://travis-ci.org/tenforce/sparql-aiohttp)
 [![codecov](https://codecov.io/gh/tenforce/sparql-aiohttp/branch/master/graph/badge.svg)](https://codecov.io/gh/tenforce/sparql-aiohttp)
 

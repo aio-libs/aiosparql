@@ -2,3 +2,8 @@ include test-requirements.txt
 include requirements.txt
 include README.rst
 include LICENSE
+graft aioparseql
+graft tests
+global-exclude *.pyc
+include tox.ini
+prune docs/_build

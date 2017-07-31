@@ -37,6 +37,7 @@ setup(
     zip_safe=False,
     test_suite='tests',
     python_requires='>=3.5.0',
+    license="Apache 2",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Other Environment',

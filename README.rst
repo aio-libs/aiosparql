@@ -8,7 +8,7 @@ An asynchronous SPARQL library using aiohttp
 Synopsis
 --------
 
-.. codeblock:: python
+::
 
    from aiosparql.syntax import (
        IRI, Namespace, Node, PrefixedName, RDF, RDFTerm, Triples)
@@ -69,13 +69,13 @@ Installation
 
  *  User space installation
 
-    .. code-block:: shell
+    ::
 
        easy_install --user aiosparql
 
  *  System wide installation
 
-    .. code-block:: shell
+    ::
 
        easy_install aiosparql
 

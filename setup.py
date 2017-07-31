@@ -22,11 +22,15 @@ with open('./test-requirements.txt') as test_reqs_txt:
     test_requirements = list(iter(test_reqs_txt))
 
 
+long_description = open('README.rst').read()
+
+
 setup(
     name="aiosparql",
     version=version,
     description="An asynchronous SPARQL library using aiohttp",
-    url='https://github.com/tenforce/sparql-aiohttp',
+    long_description=long_description,
+    url='https://github.com/aio-libs/aiosparql',
     packages=find_packages(exclude=["tests.*", "tests"]),
     install_requires=['aiohttp>=2.1.0'],
     tests_require=test_requirements,

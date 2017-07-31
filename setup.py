@@ -18,10 +18,6 @@ with (Path(__file__).parent / 'aiosparql' / '__init__.py').open() as fp:
         raise RuntimeError('Unable to determine version.')
 
 
-with open('./requirements.txt') as reqs_txt:
-    requirements = list(iter(reqs_txt))
-
-
 with open('./test-requirements.txt') as test_reqs_txt:
     test_requirements = list(iter(test_reqs_txt))
 
@@ -32,10 +28,11 @@ setup(
     description="An asynchronous SPARQL library using aiohttp",
     url='https://github.com/tenforce/sparql-aiohttp',
     packages=find_packages(exclude=["tests.*", "tests"]),
-    install_requires=requirements,
+    install_requires=['aiohttp>=2.1.0'],
     tests_require=test_requirements,
     zip_safe=False,
     test_suite='tests',
+    python_requires='>=3.5.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Other Environment',
@@ -43,6 +40,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Utilities',
         'License :: OSI Approved :: Apache Software License',

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import re
+from pathlib import Path
+
 import os
 
 from setuptools import setup, find_packages
@@ -7,8 +10,13 @@ from setuptools import setup, find_packages
 ROOT_DIR = os.path.dirname(__file__)
 SOURCE_DIR = os.path.join(ROOT_DIR)
 
-version = None
-exec(open('aiosparql/__init__.py').read())
+with (Path(__file__).parent / 'aiosparql' / '__init__.py').open() as fp:
+    try:
+        version = re.findall(r"^__version__ = '([^']+)'\r?$",
+                             fp.read(), re.M)[0]
+    except IndexError:
+        raise RuntimeError('Unable to determine version.')
+
 
 with open('./requirements.txt') as reqs_txt:
     requirements = list(iter(reqs_txt))

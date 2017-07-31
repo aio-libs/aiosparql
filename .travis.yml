@@ -16,13 +16,14 @@ jobs:
   include:
     - stage: deploy
       python: 3.6
-      provider: pypi
-      user: andrew.svetlov
-      password:
-        secure: "YVTlqpwm/GqsZmDKQuyDgY+5Dh2OxLg32ZqxMnP2fWhLiXA8ngZdSNUmLAsLtvQ63Hcc+mbzCX4P6BshmyJ7tL1AIrZ6zO9LeJnlwobF9cPgXMAX1Q8dYtMcj/phcSZb6Txl3b2GtLE0p0kJIaO2vsX9tYvcQBgQ6Hiy92KRgf65NEVSvcDGmWDzWwSUAJ6AISfHI+uhYP/XPxFqC9IJCDCNR7dzCOFma3OqAkpbS4yz84+rT3Cg0d5sbOEJ3m3Pjo12n1A79Ut6N1joBODy7NQVGrMqQRs0aSxGVMAzZ9C1VmEj/4GneaLuDQmokU5klLeSoukb5HLkNKSXBypoeG01ITnnSjk84U/TZeSbpHin1EpbxclxC3TAM1odR9/BISZkt69MWZF3+VIUycE4NHEXe8Ez/wzj0Vxdt2ymKqLT9MyXQ6fOk429AHz9wQczWSNgrW8wNxJtxMBWJRo9Le5J3+il9PQwRQVBBbti0kg+c31vEpWQzNpK2ibqEialWaxN8fGDgEZuPvx0Q2xOK/zlzahA2ZGQHr6OqBRfeUE5u+ntierf9PjlHBz0E3g6PwP47mJ4OQuw909buaUwIREhNOD9YTuchiavowuo9iiXX/dK6ME3v3w21HbF8Bw12eYqbojcHX7HGwPRSMlgTD0x+aAlUsD/yWE5UEhRjzk="
-      distributions: "sdist bdist_wheel"
-      on:
-        tags: true
-        all_branches: true
-      script: skip
+      deploy:
+        provider: pypi
+        user: andrew.svetlov
+        password:
+          secure: "YVTlqpwm/GqsZmDKQuyDgY+5Dh2OxLg32ZqxMnP2fWhLiXA8ngZdSNUmLAsLtvQ63Hcc+mbzCX4P6BshmyJ7tL1AIrZ6zO9LeJnlwobF9cPgXMAX1Q8dYtMcj/phcSZb6Txl3b2GtLE0p0kJIaO2vsX9tYvcQBgQ6Hiy92KRgf65NEVSvcDGmWDzWwSUAJ6AISfHI+uhYP/XPxFqC9IJCDCNR7dzCOFma3OqAkpbS4yz84+rT3Cg0d5sbOEJ3m3Pjo12n1A79Ut6N1joBODy7NQVGrMqQRs0aSxGVMAzZ9C1VmEj/4GneaLuDQmokU5klLeSoukb5HLkNKSXBypoeG01ITnnSjk84U/TZeSbpHin1EpbxclxC3TAM1odR9/BISZkt69MWZF3+VIUycE4NHEXe8Ez/wzj0Vxdt2ymKqLT9MyXQ6fOk429AHz9wQczWSNgrW8wNxJtxMBWJRo9Le5J3+il9PQwRQVBBbti0kg+c31vEpWQzNpK2ibqEialWaxN8fGDgEZuPvx0Q2xOK/zlzahA2ZGQHr6OqBRfeUE5u+ntierf9PjlHBz0E3g6PwP47mJ4OQuw909buaUwIREhNOD9YTuchiavowuo9iiXX/dK6ME3v3w21HbF8Bw12eYqbojcHX7HGwPRSMlgTD0x+aAlUsD/yWE5UEhRjzk="
+        distributions: "sdist bdist_wheel"
+        on:
+          tags: true
+          all_branches: true
+      script: true
       after_success: true  # do nothing

@@ -1,16 +1,67 @@
-from aiohttp.test_utils import AioHTTPTestCase, TestClient, unittest_run_loop
+from aiohttp.test_utils import (
+    AioHTTPTestCase, BaseTestServer, TestServer, unittest_run_loop)
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
-import asyncio
 
 
 __all__ = ['unittest_run_loop', 'AioSPARQLTestCase', 'TestSPARQLClient']
 
 
-class TestSPARQLClient(TestClient, SPARQLClient):
-    def __init__(self, app, **kwargs):
-        TestClient.__init__(self, app, loop=kwargs.get('loop'))
-        SPARQLClient.__init__(self, **kwargs)
+class TestSPARQLClient:
+    def __init__(self, server, *, cookie_jar=None, loop=None, **kwargs):
+        if not isinstance(server, BaseTestServer):
+            raise TypeError("server must be web.Application TestServer "
+                            "instance, found type: %r" % type(server))
+        self._server = server
+        self._loop = loop
+        self._client_kwargs = kwargs
+        self._session = None
+        self._closed = False
+
+    async def start_server(self):
+        await self._server.start_server(loop=self._loop)
+        kwargs = dict(self._client_kwargs)
+        if kwargs.get('endpoint'):
+            kwargs['endpoint'] = self.make_url(kwargs['endpoint'])
+        if kwargs.get('update_endpoint'):
+            kwargs['update_endpoint'] = \
+                self.make_url(kwargs['update_endpoint'])
+        self._session = SPARQLClient(loop=self._loop,
+                                     **kwargs)
+
+    @property
+    def host(self):
+        return self._server.host  # pragma nocover
+
+    @property
+    def port(self):
+        return self._server.port  # pragma nocover
+
+    @property
+    def server(self):
+        return self._server  # pragma nocover
+
+    @property
+    def session(self):
+        if self._session is None:
+            raise RuntimeError("Trying to access SPARQLClient before the "
+                               "server has started")  # pragma nocover
+        return self._session
+
+    def make_url(self, path):
+        return self._server.make_url(path)
+
+    def query(self, query, *args, **keywords):
+        return self.session.query(query, *args, **keywords)
+
+    def update(self, query, *args, **keywords):
+        return self.session.update(query, *args, **keywords)
+
+    async def close(self):
+        if not self._closed:
+            await self._session.close()
+            await self._server.close()
+            self._closed = True
 
 
 class AioSPARQLTestCase(AioHTTPTestCase):
@@ -19,6 +70,6 @@ class AioSPARQLTestCase(AioHTTPTestCase):
         "graph": IRI("http://mu.semte.ch/test-application"),
     }
 
-    @asyncio.coroutine
-    def _get_client(self, app):
-        return TestSPARQLClient(app, loop=self.loop, **self.client_kwargs)
+    async def _get_client(self, app):
+        return TestSPARQLClient(TestServer(app, loop=self.loop),
+                                loop=self.loop, **self.client_kwargs)

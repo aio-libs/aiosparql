@@ -1,9 +1,10 @@
-from aiohttp import web
 import json
-from textwrap import dedent
 import unittest
+from aiohttp import web
+from textwrap import dedent
 
-from aiosparql.client import SPARQLQueryFormatter, SPARQLRequestFailed
+from aiosparql.client import (
+    SPARQLClient, SPARQLQueryFormatter, SPARQLRequestFailed)
 from aiosparql.syntax import IRI, RDF, Triples
 from aiosparql.test_utils import AioSPARQLTestCase, unittest_run_loop
 
@@ -125,3 +126,12 @@ class Formatter(unittest.TestCase):
                          "a\n  b\n  c\nd")
         self.assertEqual(self._format("a\n{{}}\nd", "b\nc"), "a\nb\nc\nd")
         self.assertEqual(self._format("a{{}}d", "bc"), "abcd")
+
+
+async def test_client_context(loop):
+    async with SPARQLClient(endpoint="http://example.org",
+                            graph="http://example/graph") as client:
+        assert not client.session.closed
+        assert not client.closed
+    assert client.session.closed
+    assert client.closed

@@ -1,8 +1,9 @@
 import aiohttp
+import asyncio
 import logging
+import re
 from math import ceil, log10
 from os import environ as ENV
-import re
 from string import Formatter
 from textwrap import dedent, indent
 from typing import List, Optional
@@ -78,17 +79,18 @@ class SPARQLQueryFormatter(Formatter):
         return indent(format(value, format_spec), self.indent)
 
 
-class SPARQLClient(aiohttp.ClientSession):
+class SPARQLClient:
     def __init__(self,
                  endpoint: Optional[str] = None,
                  update_endpoint: Optional[str] = None,
                  prefixes: Optional[List[Namespace]] = None,
                  graph: Optional[str] = None,
                  **kwargs):
-        super(SPARQLClient, self).__init__(**kwargs)
+        self._closed = False
         self.endpoint = endpoint or ENV['MU_SPARQL_ENDPOINT']
         self.graph = graph or IRI(ENV['MU_APPLICATION_GRAPH'])
         self.update_endpoint = update_endpoint or self.endpoint
+        self.session = aiohttp.ClientSession(**kwargs)
         self._generate_prefixes(prefixes)
 
     def _generate_prefixes(self, prefixes):
@@ -131,8 +133,8 @@ class SPARQLClient(aiohttp.ClientSession):
         logger.debug("Sending SPARQL query to %s: \n%s\n%s",
                      self.endpoint, self._pretty_print_query(full_query),
                      "=" * 40)
-        async with self.post(self.endpoint, data={"query": full_query},
-                             headers=headers) as resp:
+        async with self.session.post(self.endpoint, data={"query": full_query},
+                                     headers=headers) as resp:
             try:
                 resp.raise_for_status()
             except aiohttp.client_exceptions.ClientResponseError as exc:
@@ -153,8 +155,9 @@ class SPARQLClient(aiohttp.ClientSession):
         logger.debug("Sending SPARQL query to %s:\n%s\n%s",
                      self.endpoint, self._pretty_print_query(full_query),
                      "=" * 40)
-        async with self.post(self.update_endpoint, data={"update": full_query},
-                             headers=headers) as resp:
+        async with self.session.post(self.update_endpoint,
+                                     data={"update": full_query},
+                                     headers=headers) as resp:
             try:
                 resp.raise_for_status()
             except aiohttp.client_exceptions.ClientResponseError as exc:
@@ -166,3 +169,20 @@ class SPARQLClient(aiohttp.ClientSession):
                     code=exc.code, message=exc.message, headers=exc.headers,
                     explanation=explanation)
             return await resp.json()
+
+    @property
+    def closed(self):
+        return self._closed
+
+    @asyncio.coroutine
+    def close(self):
+        self._closed = True
+        # NOTE: TypeError: object _CoroGuard can't be used in 'await'
+        #       expression
+        yield from self.session.close()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.close()

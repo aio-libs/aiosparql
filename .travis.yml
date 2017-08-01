@@ -1,16 +1,28 @@
-sudo: false
+sudo: true
+
 language: python
+
+services:
+  - docker
+
 python:
   - "3.5"
   - "3.6"
+
 install:
   - pip install tox tox-travis codecov
+
+before_script:
+  - docker run -d --name travis-virtuoso -p 8890:8890 -e SPARQL_UPDATE=true tenforce/virtuoso:1.2.0-virtuoso7.2.2
+
 script:
-    - tox
+  - tox
+
+after_script:
+  - docker rm -vf travis-virtuoso
+
 after_success:
   - codecov
-
-
 
 jobs:
   include:

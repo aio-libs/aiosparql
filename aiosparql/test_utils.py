@@ -26,6 +26,8 @@ class TestSPARQLClient:
         if kwargs.get('update_endpoint'):
             kwargs['update_endpoint'] = \
                 self.make_url(kwargs['update_endpoint'])
+        if kwargs.get('crud_endpoint'):
+            kwargs['crud_endpoint'] = self.make_url(kwargs['crud_endpoint'])
         self._session = SPARQLClient(loop=self._loop,
                                      **kwargs)
 
@@ -49,13 +51,25 @@ class TestSPARQLClient:
         return self._session
 
     def make_url(self, path):
-        return self._server.make_url(path)
+        return str(self._server.make_url(path))
 
     def query(self, query, *args, **keywords):
         return self.session.query(query, *args, **keywords)
 
     def update(self, query, *args, **keywords):
         return self.session.update(query, *args, **keywords)
+
+    def get(self, *args, **kwargs):
+        return self.session.get(*args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        return self.session.put(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.session.delete(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self.session.post(*args, **kwargs)
 
     async def close(self):
         if not self._closed:

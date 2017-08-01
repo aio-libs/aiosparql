@@ -3,12 +3,11 @@ import asyncio
 import logging
 import re
 from math import ceil, log10
-from os import environ as ENV
 from string import Formatter
 from textwrap import dedent, indent
-from typing import List, Optional
+from typing import Dict, Optional
 
-from .syntax import IRI, MetaNamespace, Namespace
+from .syntax import IRI, MetaNamespace
 
 __all__ = ['SPARQLClient', 'SPARQLRequestFailed', 'SPARQLQueryFormatter']
 
@@ -80,18 +79,29 @@ class SPARQLQueryFormatter(Formatter):
 
 
 class SPARQLClient:
-    def __init__(self,
-                 endpoint: Optional[str] = None,
+    def __init__(self, endpoint: str, *,
                  update_endpoint: Optional[str] = None,
-                 prefixes: Optional[List[Namespace]] = None,
-                 graph: Optional[str] = None,
+                 prefixes: Optional[Dict[str, IRI]] = None,
+                 graph: Optional[IRI] = None,
                  **kwargs):
         self._closed = False
-        self.endpoint = endpoint or ENV['MU_SPARQL_ENDPOINT']
-        self.graph = graph or IRI(ENV['MU_APPLICATION_GRAPH'])
-        self.update_endpoint = update_endpoint or self.endpoint
+        self._endpoint = endpoint
+        self._update_endpoint = update_endpoint
+        self._graph = graph
         self.session = aiohttp.ClientSession(**kwargs)
         self._generate_prefixes(prefixes)
+
+    @property
+    def endpoint(self):
+        return self._endpoint
+
+    @property
+    def update_endpoint(self):
+        return self._update_endpoint or self._endpoint
+
+    @property
+    def graph(self):
+        return self._graph
 
     def _generate_prefixes(self, prefixes):
         header = [
@@ -102,7 +112,7 @@ class SPARQLClient:
         if prefixes:
             header.append("")
             header.extend([
-                "PREFIX %s: %s" % (x[0], x[1])
+                "PREFIX %s: %s" % x
                 for x in sorted(prefixes.items(), key=lambda x: x[0])
             ])
         self._prefixes_header = "\n".join(header) + "\n"
@@ -110,9 +120,7 @@ class SPARQLClient:
     def _prepare_query(self, query: str, *args, **keywords) -> dict:
         lines = [self._prefixes_header]
         lines.extend([dedent(query).strip()])
-        query_args = {
-            'graph': self.graph,
-        }
+        query_args = {'graph': self.graph} if self.graph else {}
         query_args.update(keywords)
         query_formatter = SPARQLQueryFormatter()
         return query_formatter.vformat("\n".join(lines), args, query_args)

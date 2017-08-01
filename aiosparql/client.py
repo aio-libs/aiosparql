@@ -2,10 +2,11 @@ import aiohttp
 import asyncio
 import logging
 import re
+from io import IOBase
 from math import ceil, log10
 from string import Formatter
 from textwrap import dedent, indent
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from .syntax import IRI, MetaNamespace
 
@@ -81,12 +82,14 @@ class SPARQLQueryFormatter(Formatter):
 class SPARQLClient:
     def __init__(self, endpoint: str, *,
                  update_endpoint: Optional[str] = None,
+                 crud_endpoint: Optional[str] = None,
                  prefixes: Optional[Dict[str, IRI]] = None,
                  graph: Optional[IRI] = None,
                  **kwargs):
         self._closed = False
         self._endpoint = endpoint
         self._update_endpoint = update_endpoint
+        self._crud_endpoint = crud_endpoint
         self._graph = graph
         self.session = aiohttp.ClientSession(**kwargs)
         self._generate_prefixes(prefixes)
@@ -98,6 +101,10 @@ class SPARQLClient:
     @property
     def update_endpoint(self):
         return self._update_endpoint or self._endpoint
+
+    @property
+    def crud_endpoint(self):
+        return self._crud_endpoint
 
     @property
     def graph(self):
@@ -177,6 +184,47 @@ class SPARQLClient:
                     code=exc.code, message=exc.message, headers=exc.headers,
                     explanation=explanation)
             return await resp.json()
+
+    def _crud_request(self, method, graph=None, data=None, accept=None,
+                      content_type=None):
+        if not self.crud_endpoint:
+            raise ValueError("CRUD endpoint not specified")
+        url = self.crud_endpoint
+        if graph:
+            params = {'graph': graph.value}
+        elif self.graph:
+            params = {'graph': self.graph.value}
+        else:
+            params = None
+            url += "?default"
+        headers = {}
+        if content_type:
+            headers["Content-Type"] = content_type
+        if accept:
+            headers["Accept"] = accept
+        logger.debug("Sending %s request to CRUD endpoint %s with headers "
+                     "%r, and params %r", method, url, headers, params)
+        return self.session.request(method, url, params=params,
+                                    headers=headers, data=data)
+
+    def get(self, *, format: str, graph: Optional[IRI] = None):
+        return self._crud_request("GET", graph=graph, accept=format)
+
+    async def put(self, data: Union[bytes, IOBase], *, format: str,
+                  graph: Optional[IRI] = None):
+        async with self._crud_request("PUT", graph=graph, data=data,
+                                      content_type=format) as resp:
+            resp.raise_for_status()
+
+    async def delete(self, graph: Optional[IRI] = None):
+        async with self._crud_request("DELETE", graph=graph) as resp:
+            resp.raise_for_status()
+
+    async def post(self, data: Union[bytes, IOBase], *, format: str,
+                   graph: Optional[IRI] = None):
+        async with self._crud_request("POST", graph=graph, data=data,
+                                      content_type=format) as resp:
+            resp.raise_for_status()
 
     @property
     def closed(self):

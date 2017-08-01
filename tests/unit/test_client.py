@@ -1,3 +1,4 @@
+import aiohttp
 import json
 import unittest
 from aiohttp import web
@@ -22,10 +23,48 @@ async def sparql_endpoint(request):
                         content_type="application/json")
 
 
+async def crud_endpoint(request):
+    request.app['last_request'] = request
+    if request.method == "PATCH":
+        return web.Response(text="{}", content_type="application/json")
+    else:
+        raise web.HTTPNoContent()
+
+
+class ClientWithoutGraph(AioSPARQLTestCase):
+    client_kwargs = {
+        "endpoint": "/sparql",
+        "crud_endpoint": "/crud",
+    }
+
+    async def get_application(self):
+        app = web.Application()
+        app.router.add_route('*', '/crud', crud_endpoint)
+        return app
+
+    @unittest_run_loop
+    async def test_get(self):
+        async with self.client.get(format="some/format") as response:
+            self.assertIsInstance(response, aiohttp.ClientResponse)
+        self.assertEqual(self.app['last_request'].method, "GET")
+        self.assertEqual(self.app['last_request'].query_string, "default")
+        self.assertEqual(self.app['last_request'].headers['Accept'],
+                         "some/format")
+
+        async with self.client.get(format="some/format", graph=IRI("foo")) \
+                as response:
+            self.assertIsInstance(response, aiohttp.ClientResponse)
+        self.assertEqual(self.app['last_request'].method, "GET")
+        self.assertEqual(self.app['last_request'].query_string, "graph=foo")
+        self.assertEqual(self.app['last_request'].headers['Accept'],
+                         "some/format")
+
+
 class Client(AioSPARQLTestCase):
     client_kwargs = {
         "endpoint": "/sparql",
         "update_endpoint": "/sparql-update",
+        "crud_endpoint": "/crud",
         "graph": IRI("http://mu.semte.ch/test-application"),
     }
 
@@ -33,6 +72,7 @@ class Client(AioSPARQLTestCase):
         app = web.Application()
         app.router.add_post('/sparql', sparql_endpoint)
         app.router.add_post('/sparql-update', sparql_endpoint)
+        app.router.add_route('*', '/crud', crud_endpoint)
         return app
 
     @unittest_run_loop
@@ -82,6 +122,58 @@ class Client(AioSPARQLTestCase):
             }"""))
         with self.assertRaises(SPARQLRequestFailed):
             await self.client.update("failure")
+
+    @unittest_run_loop
+    async def test_get(self):
+        async with self.client.get(format="some/format") as response:
+            self.assertIsInstance(response, aiohttp.ClientResponse)
+        self.assertEqual(self.app['last_request'].method, "GET")
+        self.assertEqual(self.app['last_request'].query_string,
+                         "graph=%s" % self.client_kwargs['graph'].value)
+        self.assertEqual(self.app['last_request'].headers['Accept'],
+                         "some/format")
+
+        async with self.client.get(format="some/format", graph=IRI("foo")) \
+                as response:
+            self.assertIsInstance(response, aiohttp.ClientResponse)
+        self.assertEqual(self.app['last_request'].method, "GET")
+        self.assertEqual(self.app['last_request'].query_string, "graph=foo")
+        self.assertEqual(self.app['last_request'].headers['Accept'],
+                         "some/format")
+
+    @unittest_run_loop
+    async def test_put(self):
+        await self.client.put(b"", format="some/format")
+        self.assertEqual(self.app['last_request'].method, "PUT")
+        self.assertEqual(self.app['last_request'].query_string,
+                         "graph=%s" % self.client_kwargs['graph'].value)
+        self.assertEqual(self.app['last_request'].headers['Content-Type'],
+                         "some/format")
+
+        await self.client.put(b"", format="some/format", graph=IRI("foo"))
+        self.assertEqual(self.app['last_request'].query_string, "graph=foo")
+
+    @unittest_run_loop
+    async def test_delete(self):
+        await self.client.delete()
+        self.assertEqual(self.app['last_request'].method, "DELETE")
+        self.assertEqual(self.app['last_request'].query_string,
+                         "graph=%s" % self.client_kwargs['graph'].value)
+
+        await self.client.delete(IRI("foo"))
+        self.assertEqual(self.app['last_request'].query_string, "graph=foo")
+
+    @unittest_run_loop
+    async def test_post(self):
+        await self.client.post(b"", format="some/format")
+        self.assertEqual(self.app['last_request'].method, "POST")
+        self.assertEqual(self.app['last_request'].query_string,
+                         "graph=%s" % self.client_kwargs['graph'].value)
+        self.assertEqual(self.app['last_request'].headers['Content-Type'],
+                         "some/format")
+
+        await self.client.post(b"", format="some/format", graph=IRI("foo"))
+        self.assertEqual(self.app['last_request'].query_string, "graph=foo")
 
 
 class ClientCustomPrefixes(AioSPARQLTestCase):

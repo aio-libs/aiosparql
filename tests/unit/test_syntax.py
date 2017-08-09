@@ -94,3 +94,20 @@ class Syntax(unittest.TestCase):
         self.assertEqual(RDFTerm("foo"), RDFTerm("foo"))
         self.assertEqual(RDFTerm("foo"), "foo")
         self.assertEqual(len(set([RDFTerm("foo"), RDFTerm("foo")])), 1)
+
+
+def test_custom_namespace(testdir):
+    testdir.makepyfile(
+        """
+        from aiosparql.syntax import IRI, Namespace, all_prefixes
+
+
+        class CustomNamespace(Namespace):
+            __iri__ = IRI("http://example.org/test#")
+
+
+        def test_custom_namespace():
+            assert "customnamespace" in all_prefixes
+        """)
+    result = testdir.runpytest()
+    result.assert_outcomes(passed=1)

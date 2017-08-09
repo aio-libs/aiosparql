@@ -4,7 +4,6 @@ from textwrap import indent
 
 from .escape import escape_any, escape_string, escapers
 
-
 __all__ = [
     "RDFTerm", "Node", "Triples", "PrefixedName", "IRI", "Literal", "UNDEF",
     "Namespace", "RDF",
@@ -225,9 +224,10 @@ class UNDEF(RDFTerm):
         return hash(UNDEF)
 
 
-class MetaNamespace(type):
-    prefixes = {}
+all_prefixes = {}
 
+
+class MetaNamespace(type):
     def __new__(mcs, name, bases, nmspc):
         if bases:
             assert '__iri__' in nmspc, \
@@ -247,7 +247,7 @@ class MetaNamespace(type):
     def __init__(cls, name, bases, nmspc):
         super(MetaNamespace, cls).__init__(name, bases, nmspc)
         if bases:
-            MetaNamespace.prefixes[name] = cls
+            all_prefixes[cls.__prefix_label__] = cls
 
 
 class Namespace(metaclass=MetaNamespace):

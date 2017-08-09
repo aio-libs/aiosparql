@@ -1,1 +1,1 @@
-pytest_plugins = ['aiohttp.pytest_plugin']
+pytest_plugins = ['aiohttp.pytest_plugin', 'pytester']

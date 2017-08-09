@@ -8,7 +8,7 @@ from string import Formatter
 from textwrap import dedent, indent
 from typing import Dict, Optional, Union
 
-from .syntax import IRI, MetaNamespace
+from .syntax import IRI, all_prefixes
 
 __all__ = ['SPARQLClient', 'SPARQLRequestFailed', 'SPARQLQueryFormatter']
 
@@ -112,9 +112,8 @@ class SPARQLClient:
 
     def _generate_prefixes(self, prefixes):
         header = [
-            "PREFIX %s: %s" % (x.__prefix_label__, x.__iri__)
-            for x in sorted(MetaNamespace.prefixes.values(),
-                            key=lambda x: x.__prefix_label__)
+            "PREFIX %s: %s" % (prefix, ns.__iri__)
+            for prefix, ns in sorted(all_prefixes.items(), key=lambda x: x[0])
         ]
         if prefixes:
             header.append("")

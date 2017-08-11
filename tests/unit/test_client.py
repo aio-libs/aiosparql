@@ -75,6 +75,9 @@ class Client(AioSPARQLTestCase):
         app.router.add_route('*', '/crud', crud_endpoint)
         return app
 
+    def test_graph(self):
+        self.assertEqual(self.client.graph, self.client_kwargs['graph'])
+
     @unittest_run_loop
     async def test_query(self):
         triples = Triples([("john", RDF.type, "doe"), ("john", "p", "o")])

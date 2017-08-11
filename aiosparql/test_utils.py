@@ -44,6 +44,10 @@ class TestSPARQLClient:
         return self._server  # pragma nocover
 
     @property
+    def graph(self):
+        return self._session.graph
+
+    @property
     def session(self):
         if self._session is None:
             raise RuntimeError("Trying to access SPARQLClient before the "

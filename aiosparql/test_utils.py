@@ -1,5 +1,6 @@
 from aiohttp.test_utils import (
-    AioHTTPTestCase, BaseTestServer, TestServer, unittest_run_loop)
+    BaseTestServer, TestServer, unittest_run_loop
+)
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
 
@@ -78,7 +79,7 @@ class TestSPARQLClient:
             self._closed = True
 
 
-class AioSPARQLTestCase(AioHTTPTestCase):
+class AioSPARQLTestCase(TestSPARQLClient):
     client_kwargs = {
         "endpoint": "/sparql",
         "graph": IRI("http://mu.semte.ch/test-application"),

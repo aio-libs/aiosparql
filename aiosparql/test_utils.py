@@ -1,11 +1,6 @@
-from aiohttp.test_utils import (
-    BaseTestServer, TestServer, unittest_run_loop
-)
+from aiohttp.test_utils import BaseTestServer, TestServer
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
-
-
-__all__ = ['unittest_run_loop', 'AioSPARQLTestCase', 'TestSPARQLClient']
 
 
 class TestSPARQLClient:

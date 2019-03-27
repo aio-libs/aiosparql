@@ -1,4 +1,4 @@
-from tests.integration.helpers import IntegrationTestCase, unittest_run_loop
+import pytest
 
 
 sample_data = """\
@@ -16,13 +16,12 @@ sample_data = """\
 sample_format = "text/turtle"
 
 
-class Client(IntegrationTestCase):
-    @unittest_run_loop
-    async def test_crud(self):
-        await self.client.put(sample_data, format=sample_format)
-        await self.client.delete()
-        await self.client.post(sample_data, format=sample_format)
-        async with self.client.get(format="text/turtle") as res:
-            self.assertEqual(res.status, 200)
-            text = await res.text()
-            self.assertIn("@prefix", text)
+@pytest.mark.asyncio
+async def test_crud(client):
+    await client.put(sample_data, format=sample_format)
+    await client.delete()
+    await client.post(sample_data, format=sample_format)
+    async with client.get(format="text/turtle") as res:
+        assert res.status == 200
+        text = await res.text()
+        assert "@prefix" in text

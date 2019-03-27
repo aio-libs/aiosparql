@@ -88,10 +88,18 @@ Installation
 
        easy_install aiosparql
 
+
 Requirements
 ^^^^^^^^^^^^
 
  *  Python >= 3.5
+Testing
+-------
+In order for the tests to run, you should have the following docker container started:
+
+   ::
+   
+      docker run -d --name travis-virtuoso -p 8890:8890 -e SPARQL_UPDATE=true tenforce/virtuoso:1.2.0-virtuoso7.2.2
 
 Credits
 -------

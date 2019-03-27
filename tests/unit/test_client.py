@@ -2,12 +2,14 @@ import aiohttp
 import json
 import unittest
 from aiohttp import web
+from aiohttp.test_utils import unittest_run_loop
 from textwrap import dedent
 
 from aiosparql.client import (
-    SPARQLClient, SPARQLQueryFormatter, SPARQLRequestFailed)
+    SPARQLClient, SPARQLQueryFormatter, SPARQLRequestFailed
+)
 from aiosparql.syntax import IRI, RDF, Triples
-from aiosparql.test_utils import AioSPARQLTestCase, unittest_run_loop
+from aiosparql.test_utils import AioSPARQLTestCase
 
 
 async def sparql_endpoint(request):

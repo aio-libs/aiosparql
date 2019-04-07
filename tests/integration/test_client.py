@@ -13,6 +13,7 @@ sample_data = """\
     ex:homePage <http://purl.org/net/dajobe/>
   ] .
 """
+
 sample_format = "text/turtle"
 
 
@@ -25,3 +26,26 @@ async def test_crud(client):
         assert res.status == 200
         text = await res.text()
         assert "@prefix" in text
+
+
+@pytest.mark.asyncio
+async def test_update(client):
+    update_query = """
+    INSERT DATA {
+        GRAPH <urn:sparql:tests:insert:data> {
+        <#book1> <#price> 42
+        }
+    }
+    """
+
+    await client.update(update_query)
+    select_query = """
+    SELECT *
+    FROM <urn:sparql:tests:insert:data>
+    WHERE {
+        ?s ?p ?o
+    }
+    """
+
+    result = await client.query(select_query)
+    assert len(result['results']['bindings']) == 1

@@ -26,7 +26,7 @@ async def client(loop):
     try:
         await client.delete()
     except aiohttp.ClientResponseError as exc:
-        if exc.code != 404:
+        if exc.status != 404:
             raise
     await client.close()
 

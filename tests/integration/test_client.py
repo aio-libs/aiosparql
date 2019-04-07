@@ -29,7 +29,7 @@ async def test_crud(client):
 
 
 @pytest.mark.asyncio
-async def test_update(client):
+async def test_update_insert(client):
     update_query = """
     INSERT DATA {
         GRAPH <urn:sparql:tests:insert:data> {
@@ -47,3 +47,35 @@ async def test_update(client):
     """
     result = await client.query(select_query)
     assert len(result['results']['bindings']) == 1
+
+
+@pytest.mark.asyncio
+async def test_update_delete(client):
+    update_query = """
+    INSERT DATA {
+        GRAPH <urn:sparql:tests:insert:data> {
+        <#book1> <#price> 42
+        }
+    }
+    """
+    await client.update(update_query)
+    delete_query = """
+    WITH <urn:sparql:tests:insert:data>
+    DELETE {
+        ?s ?p ?o
+    }
+    WHERE {
+        ?s ?p ?o
+    }
+    """
+    result = await client.query(delete_query)
+    assert len(result['results']['bindings']) == 1
+    select_query = """
+    SELECT *
+    FROM <urn:sparql:tests:insert:data>
+    WHERE {
+        ?s ?p ?o
+    }
+    """
+    result = await client.query(select_query)
+    assert len(result['results']['bindings']) == 0

@@ -37,7 +37,6 @@ async def test_update(client):
         }
     }
     """
-
     await client.update(update_query)
     select_query = """
     SELECT *
@@ -46,6 +45,5 @@ async def test_update(client):
         ?s ?p ?o
     }
     """
-
     result = await client.query(select_query)
     assert len(result['results']['bindings']) == 1

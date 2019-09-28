@@ -18,18 +18,18 @@ sample_format = "text/turtle"
 
 
 @pytest.mark.asyncio
-async def test_crud(client):
-    await client.put(sample_data, format=sample_format)
-    await client.delete()
-    await client.post(sample_data, format=sample_format)
-    async with client.get(format="text/turtle") as res:
+async def test_crud_virtuoso(virtuoso_client):
+    await virtuoso_client.put(sample_data, format=sample_format)
+    await virtuoso_client.delete()
+    await virtuoso_client.post(sample_data, format=sample_format)
+    async with virtuoso_client.get(format=sample_format) as res:
         assert res.status == 200
         text = await res.text()
         assert "@prefix" in text
 
 
 @pytest.mark.asyncio
-async def test_update_insert(client):
+async def test_update_insert_virtuoso(virtuoso_client):
     update_query = """
     INSERT DATA {
         GRAPH <urn:sparql:tests:insert:data> {
@@ -37,7 +37,7 @@ async def test_update_insert(client):
         }
     }
     """
-    await client.update(update_query)
+    await virtuoso_client.update(update_query)
     select_query = """
     SELECT *
     FROM <urn:sparql:tests:insert:data>
@@ -45,12 +45,12 @@ async def test_update_insert(client):
         ?s ?p ?o
     }
     """
-    result = await client.query(select_query)
+    result = await virtuoso_client.query(select_query)
     assert len(result['results']['bindings']) == 1
 
 
 @pytest.mark.asyncio
-async def test_update_delete(client):
+async def test_update_delete_virtuoso(virtuoso_client):
     update_query = """
     INSERT DATA {
         GRAPH <urn:sparql:tests:insert:data> {
@@ -58,7 +58,7 @@ async def test_update_delete(client):
         }
     }
     """
-    await client.update(update_query)
+    await virtuoso_client.update(update_query)
     delete_query = """
     WITH <urn:sparql:tests:insert:data>
     DELETE {
@@ -68,7 +68,7 @@ async def test_update_delete(client):
         ?s ?p ?o
     }
     """
-    result = await client.query(delete_query)
+    result = await virtuoso_client.query(delete_query)
     assert len(result['results']['bindings']) == 1
     select_query = """
     SELECT *
@@ -77,5 +77,35 @@ async def test_update_delete(client):
         ?s ?p ?o
     }
     """
-    result = await client.query(select_query)
+    result = await virtuoso_client.query(select_query)
+    assert len(result['results']['bindings']) == 0
+
+
+@pytest.mark.asyncio
+async def test_update_delete_jena(jena_client):
+    update_query = """
+    INSERT DATA {
+        <#book1> <#price> 42
+    }
+    """
+    await jena_client.update(update_query)
+    delete_query = """
+    DELETE {
+        ?s ?p ?o
+    }
+    WHERE {
+        ?s ?p ?o
+    }
+    """
+    result = await jena_client.update(delete_query)
+    print(type(result))
+    print(dir(result))
+    print(result)
+    select_query = """
+    SELECT *
+    WHERE {
+        ?s ?p ?o
+    }
+    """
+    result = await jena_client.query(select_query)
     assert len(result['results']['bindings']) == 0

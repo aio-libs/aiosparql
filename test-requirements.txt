@@ -1,3 +1,4 @@
 flake8==3.3.0
 coverage==4.4b1
 pytest-cov==2.4.0
+pytest-asyncio==0.10.0

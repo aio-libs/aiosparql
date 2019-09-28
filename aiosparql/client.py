@@ -182,6 +182,8 @@ class SPARQLClient:
                     exc.request_info, exc.history,
                     code=exc.code, message=exc.message, headers=exc.headers,
                     explanation=explanation)
+            if resp.content_type == 'text/html':
+                return resp
             return await resp.json()
 
     def _crud_request(self, method, graph=None, data=None, accept=None,

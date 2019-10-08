@@ -56,3 +56,17 @@ async def jena_client(loop, jena_endpoint):
 @pytest.fixture
 def test_client():
     return AioSPARQLTestCase()
+
+
+@pytest.fixture
+async def truncate_jena(jena_client):
+    await jena_client.update(
+        """
+        DELETE
+        WHERE {
+          GRAPH <urn:x-arq:DefaultGraph> {
+            ?s ?p ?o
+          }
+        }
+        """
+    )

@@ -6,8 +6,8 @@ services:
   - docker
 
 python:
-  - "3.5"
   - "3.6"
+  - "3.7"
 
 install:
   - pip install tox tox-travis codecov
@@ -27,7 +27,7 @@ after_success:
 jobs:
   include:
     - stage: deploy
-      python: 3.6
+      python: 3.7
       deploy:
         provider: pypi
         user: andrew.svetlov

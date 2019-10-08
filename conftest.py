@@ -1,6 +1,7 @@
-import aiohttp
+from configparser import ConfigParser
 import uuid
 import pytest
+import aiohttp
 from os import environ as ENV
 
 from aiosparql.client import SPARQLClient
@@ -12,14 +13,28 @@ pytest_plugins = ['aiohttp.pytest_plugin', 'pytester']
 
 
 @pytest.fixture
-async def virtuoso_client(loop):
+def config():
+    cfg = ConfigParser()
+    cfg.read('testing.cfg')
+    yield cfg
+
+
+@pytest.fixture
+def jena_endpoint(config: ConfigParser):
+    yield config.get('jena', 'endpoint')
+
+
+@pytest.fixture
+def virtuoso_endpoint(config: ConfigParser):
+    yield config.get('virtuoso', 'endpoint')
+
+
+@pytest.fixture
+async def virtuoso_client(loop, virtuoso_endpoint):
     _virtuoso_client = SPARQLClient(
-        ENV.get("SPARQL_ENDPOINT", "http://localhost:8890/sparql"),
+        virtuoso_endpoint,
         update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
-        crud_endpoint=ENV.get(
-            "SPARQL_UPDATE_ENDPOINT",
-            "http://localhost:8890/sparql-graph-crud"
-        ),
+        crud_endpoint="http://localhost:8890/sparql-graph-crud",
         graph=IRI("http://aiosparql.org/%s" % uuid.uuid4().hex[:7])
     )
     yield _virtuoso_client
@@ -32,8 +47,8 @@ async def virtuoso_client(loop):
 
 
 @pytest.fixture
-async def jena_client(loop):
-    _jena_client = SPARQLClient("http://localhost:3030/test")
+async def jena_client(loop, jena_endpoint):
+    _jena_client = SPARQLClient(jena_endpoint)
     yield _jena_client
     await _jena_client.close()
 

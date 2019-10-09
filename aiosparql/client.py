@@ -175,6 +175,11 @@ class SPARQLClient:
                                      data={"update": full_query},
                                      headers=headers) as resp:
             await self._raise_for_status(resp)
+            # NOTE: some databases may still return HTML instead of JSON
+            if "application/json" not in resp.content_type:
+                return {
+                    "body": await resp.text(),
+                }
             return await resp.json()
 
     def _crud_request(self, method, graph=None, data=None, accept=None,

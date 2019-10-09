@@ -93,6 +93,17 @@ Requirements
 
  *  Python >= 3.5
 
+Testing
+-------
+
+In order for the tests to run, you must have the following Docker containers started:
+
+   ::
+
+      docker run -d --name travis-virtuoso -p 8890:8890 -e SPARQL_UPDATE=true tenforce/virtuoso:1.2.0-virtuoso7.2.2
+      docker run -d -p 3030:3030 --name travis-fuseki -e ADMIN_PASSWORD=PASSWORD -e ENABLE_DATA_WRITE=true -e ENABLE_UPDATE=true -e ENABLE_UPLOAD=true secoresearch/fuseki
+
+
 Credits
 -------
 

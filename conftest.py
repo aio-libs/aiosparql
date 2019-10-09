@@ -5,7 +5,6 @@ import aiohttp
 from os import environ as ENV
 
 from aiosparql.client import SPARQLClient
-from aiosparql.test_utils import AioSPARQLTestCase
 from aiosparql.syntax import IRI
 
 
@@ -30,7 +29,7 @@ def virtuoso_endpoint(config: ConfigParser):
 
 
 @pytest.fixture
-async def virtuoso_client(loop, virtuoso_endpoint):
+async def virtuoso_client(virtuoso_endpoint):
     _virtuoso_client = SPARQLClient(
         virtuoso_endpoint,
         update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
@@ -47,15 +46,10 @@ async def virtuoso_client(loop, virtuoso_endpoint):
 
 
 @pytest.fixture
-async def jena_client(loop, jena_endpoint):
+async def jena_client(jena_endpoint):
     _jena_client = SPARQLClient(jena_endpoint)
     yield _jena_client
     await _jena_client.close()
-
-
-@pytest.fixture
-def test_client():
-    return AioSPARQLTestCase()
 
 
 @pytest.fixture

@@ -139,6 +139,17 @@ class SPARQLClient:
             for i, x in enumerate(query.split("\n"), 1)
         )
 
+    async def _raise_for_status(self, resp: aiohttp.ClientResponse) -> None:
+        if resp.status >= 400:
+            explanation = await resp.text()
+            resp.release()
+            logger.debug("Server responded:\n%s\n%s",
+                         explanation, "=" * 40)
+            raise SPARQLRequestFailed(
+                resp.request_info, resp.history,
+                code=resp.status, message=resp.reason,
+                explanation=explanation)
+
     async def query(self, query: str, *args, **keywords) -> dict:
         headers = {
             "Accept": "application/json",
@@ -149,16 +160,7 @@ class SPARQLClient:
                      "=" * 40)
         async with self.session.post(self.endpoint, data={"query": full_query},
                                      headers=headers) as resp:
-            try:
-                resp.raise_for_status()
-            except aiohttp.client_exceptions.ClientResponseError as exc:
-                explanation = await resp.text()
-                logger.debug("Server responded:\n%s\n%s",
-                             explanation, "=" * 40)
-                raise SPARQLRequestFailed(
-                    exc.request_info, exc.history,
-                    code=exc.code, message=exc.message,
-                    explanation=explanation)
+            await self._raise_for_status(resp)
             return await resp.json()
 
     async def update(self, query: str, *args, **keywords) -> dict:
@@ -172,18 +174,7 @@ class SPARQLClient:
         async with self.session.post(self.update_endpoint,
                                      data={"update": full_query},
                                      headers=headers) as resp:
-            try:
-                resp.raise_for_status()
-            except aiohttp.client_exceptions.ClientResponseError as exc:
-                explanation = await resp.text()
-                logger.debug("Server responded:\n%s\n%s",
-                             explanation, "=" * 40)
-                raise SPARQLRequestFailed(
-                    exc.request_info, exc.history,
-                    code=exc.code, message=exc.message, headers=exc.headers,
-                    explanation=explanation)
-            if resp.content_type == 'text/html':
-                return resp
+            await self._raise_for_status(resp)
             return await resp.json()
 
     def _crud_request(self, method, graph=None, data=None, accept=None,

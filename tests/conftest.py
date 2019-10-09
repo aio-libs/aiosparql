@@ -10,8 +10,8 @@ from aiosparql.syntax import IRI
 pytest_plugins = ['aiohttp.pytest_plugin', 'pytester']
 
 
-@pytest.yield_fixture
-async def virtuoso_client(loop):
+@pytest.fixture
+def virtuoso_client(loop):
     _virtuoso_client = SPARQLClient(
         "http://localhost:8890/sparql",
         update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
@@ -20,18 +20,18 @@ async def virtuoso_client(loop):
     )
     yield _virtuoso_client
     try:
-        await _virtuoso_client.delete()
+        loop.run_until_complete(_virtuoso_client.delete())
     except aiohttp.ClientResponseError as exc:
         if exc.status != 404:
             raise
-    await _virtuoso_client.close()
+    loop.run_until_complete(_virtuoso_client.close())
 
 
-@pytest.yield_fixture
-async def jena_client(loop):
+@pytest.fixture
+def jena_client(loop):
     _jena_client = SPARQLClient("http://localhost:3030/ds")
     yield _jena_client
-    await _jena_client.close()
+    loop.run_until_complete(_jena_client.close())
 
 
 @pytest.fixture

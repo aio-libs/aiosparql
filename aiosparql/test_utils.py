@@ -84,6 +84,6 @@ class AioSPARQLTestCase(AioHTTPTestCase):
         "graph": IRI("http://mu.semte.ch/test-application"),
     }
 
-    async def _get_client(self, app):
+    async def get_client(self, app):
         return TestSPARQLClient(TestServer(app, loop=self.loop),
                                 loop=self.loop, **self.client_kwargs)

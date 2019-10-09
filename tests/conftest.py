@@ -10,7 +10,7 @@ from aiosparql.syntax import IRI
 pytest_plugins = ['aiohttp.pytest_plugin', 'pytester']
 
 
-@pytest.fixture
+@pytest.yield_fixture
 async def virtuoso_client(loop):
     _virtuoso_client = SPARQLClient(
         "http://localhost:8890/sparql",
@@ -27,7 +27,7 @@ async def virtuoso_client(loop):
     await _virtuoso_client.close()
 
 
-@pytest.fixture
+@pytest.yield_fixture
 async def jena_client(loop):
     _jena_client = SPARQLClient("http://localhost:3030/ds")
     yield _jena_client

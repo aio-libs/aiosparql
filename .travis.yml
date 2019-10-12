@@ -33,9 +33,9 @@ jobs:
       python: 3.6
       deploy:
         provider: pypi
-        user: andrew.svetlov
+        user: __token__
         password:
-          secure: "YVTlqpwm/GqsZmDKQuyDgY+5Dh2OxLg32ZqxMnP2fWhLiXA8ngZdSNUmLAsLtvQ63Hcc+mbzCX4P6BshmyJ7tL1AIrZ6zO9LeJnlwobF9cPgXMAX1Q8dYtMcj/phcSZb6Txl3b2GtLE0p0kJIaO2vsX9tYvcQBgQ6Hiy92KRgf65NEVSvcDGmWDzWwSUAJ6AISfHI+uhYP/XPxFqC9IJCDCNR7dzCOFma3OqAkpbS4yz84+rT3Cg0d5sbOEJ3m3Pjo12n1A79Ut6N1joBODy7NQVGrMqQRs0aSxGVMAzZ9C1VmEj/4GneaLuDQmokU5klLeSoukb5HLkNKSXBypoeG01ITnnSjk84U/TZeSbpHin1EpbxclxC3TAM1odR9/BISZkt69MWZF3+VIUycE4NHEXe8Ez/wzj0Vxdt2ymKqLT9MyXQ6fOk429AHz9wQczWSNgrW8wNxJtxMBWJRo9Le5J3+il9PQwRQVBBbti0kg+c31vEpWQzNpK2ibqEialWaxN8fGDgEZuPvx0Q2xOK/zlzahA2ZGQHr6OqBRfeUE5u+ntierf9PjlHBz0E3g6PwP47mJ4OQuw909buaUwIREhNOD9YTuchiavowuo9iiXX/dK6ME3v3w21HbF8Bw12eYqbojcHX7HGwPRSMlgTD0x+aAlUsD/yWE5UEhRjzk="
+          secure: "tqSHaed2aAaJnEvCXLz6BelDbVCyJhdlY/2XZX+S0cD/X24t31EGPaA8WTypU3VmQMzKLK9NZfM7qw7Ua42M3eL2EHXHnRKPZQifPdxDX4ZUIMrcFtmyTRN95CboxQrE6ffPGyx9RAvI4ekmE2H744rgyMx2wjcn9y3g5j7f/OpuGyhk+skqXIskPQj3ixfiZN2LSFxwHOAUf9u+vb+sFUwOd0MYZoXvhUwwD/JJOrjyHSXTwKRZZnGTdWMaBdbS6dejsCEZ+Qqf3LdASYQHSc4awb7qayl+1lO+AKpj80BT4deHNf7gWLIV3jq9WYHOBQzfbIEse+Ca5b6NfgyrRC0G2xD6HfyRpFMLScm7xmilbWl08Tr+4fMH1sqtk/81HfC+6ESLs4s66u/yb7DHGz2SDh0TJxZV8DvlbdbQM2m1DolwTIMgr3ZJSgO6ukwhJH4LhTFqhX0XH/URYjZZpVV0soJ38F8nkYZoYWmrsOK81dec7Ld7mRJXeF17e1hmg1cFt7Nh1DWt0kKEfP4IRNRoyUwg6PI6/suPfm0XkyfUMvUlnvP9wmrLqmucT2oDc9mpB5Tt4FNmScnkb54LbOHEFtTgYGoNiqzsrNwJLJ9hZ8uURcDljddwWnd4jotV+/XrC0oLgEYhRYpy/m2S4jjDqosXsSuvdL5v1cnT0mo="
         distributions: "sdist bdist_wheel"
         on:
           tags: true

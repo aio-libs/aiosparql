@@ -1,13 +1,13 @@
 import uuid
-import pytest
-import aiohttp
 from os import environ as ENV
 
+import pytest
+
+import aiohttp
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
 
-
-pytest_plugins = ['aiohttp.pytest_plugin', 'pytester']
+pytest_plugins = ["aiohttp.pytest_plugin", "pytester"]
 
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def virtuoso_client(loop):
         "http://localhost:8890/sparql",
         update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
         crud_endpoint="http://localhost:8890/sparql-graph-crud",
-        graph=IRI("http://aiosparql.org/%s" % uuid.uuid4().hex[:7])
+        graph=IRI("http://aiosparql.org/%s" % uuid.uuid4().hex[:7]),
     )
     yield _virtuoso_client
     try:

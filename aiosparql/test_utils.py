@@ -1,5 +1,5 @@
 from aiohttp.test_utils import (
-    AioHTTPTestCase, BaseTestServer, TestServer, unittest_run_loop)
+    AioHTTPTestCase, BaseTestServer, unittest_run_loop)
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
 

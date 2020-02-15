@@ -5,8 +5,15 @@ from textwrap import indent
 from .escape import escape_any, escape_string, escapers
 
 __all__ = [
-    "RDFTerm", "Node", "Triples", "PrefixedName", "IRI", "Literal", "UNDEF",
-    "Namespace", "RDF",
+    "RDFTerm",
+    "Node",
+    "Triples",
+    "PrefixedName",
+    "IRI",
+    "Literal",
+    "UNDEF",
+    "Namespace",
+    "RDF",
 ]
 
 
@@ -15,6 +22,7 @@ class RDFTerm:
     A base class for any class that can be print (using str()) and return a
     valid RDF term (i.e. that can be used in a SPARQL query).
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -38,6 +46,7 @@ class Node(list):
 
     It can also accept a dict in argument.
     """
+
     def __init__(self, subject, value=[]):
         self.subject = subject
         if isinstance(value, dict):
@@ -80,25 +89,32 @@ class Triples(list):
     """
     A magical list of tuples (s, p, o) that be printed to a SPARQL query.
     """
+
     def __init__(self, value=[]):
-        assert all(isinstance(x, (tuple, Node)) for x in value), \
+        assert all(isinstance(x, (tuple, Node)) for x in value), (
             "only tuples and Node are accepted, received: %r" % value
-        assert all(len(x) == 3 for x in value if isinstance(x, tuple)), \
-            "tuples must be of length 3"
+        )
+        assert all(
+            len(x) == 3 for x in value if isinstance(x, tuple)
+        ), "tuples must be of length 3"
         return super(Triples, self).__init__(value)
 
     def append(self, triple):
-        assert isinstance(triple, (tuple, Node)), \
+        assert isinstance(triple, (tuple, Node)), (
             "only tuples are Node accepted, received: %r" % triple
-        assert len(triple) == 3 if isinstance(triple, tuple) else True, \
-            "tuple must be of length 3"
+        )
+        assert (
+            len(triple) == 3 if isinstance(triple, tuple) else True
+        ), "tuple must be of length 3"
         return super(Triples, self).append(triple)
 
     def extend(self, value):
-        assert all(isinstance(x, (tuple, Node)) for x in value), \
+        assert all(isinstance(x, (tuple, Node)) for x in value), (
             "only tuples are Node accepted, received: %r" % value
-        assert all(len(x) == 3 for x in value if isinstance(x, tuple)), \
-            "tuples must be of length 3"
+        )
+        assert all(
+            len(x) == 3 for x in value if isinstance(x, tuple)
+        ), "tuples must be of length 3"
         return super(Triples, self).extend(value)
 
     def __str__(self):
@@ -153,8 +169,10 @@ class PrefixedName(RDFTerm):
 
     def __eq__(self, other):
         if isinstance(other, PrefixedName):
-            return (self.prefix_label == other.prefix_label and
-                    self.local_part == other.local_part)
+            return (
+                self.prefix_label == other.prefix_label
+                and self.local_part == other.local_part
+            )
         else:
             return self.iri() == other
 
@@ -171,7 +189,8 @@ class IRI(RDFTerm):
     def __init__(self, value):
         self.value = value
         self.ref = "<%s>" % self.__re_invalid_chars__.sub(
-            lambda x: '%{:02X}'.format(ord(x.group(0))), value)
+            lambda x: "%{:02X}".format(ord(x.group(0))), value
+        )
 
     def __str__(self):
         return self.ref
@@ -202,7 +221,7 @@ class Literal(RDFTerm):
 
     def __eq__(self, other):
         if isinstance(other, Literal):
-            return (self.value == other.value and self.lang == other.lang)
+            return self.value == other.value and self.lang == other.lang
         else:
             return self.value == other
 
@@ -230,18 +249,14 @@ all_prefixes = {}
 class MetaNamespace(type):
     def __new__(mcs, name, bases, nmspc):
         if bases:
-            assert '__iri__' in nmspc, \
-                "missing attribute __iri__ for class %s" % name
-            iri = nmspc['__iri__']
-            prefix_label = nmspc.get('__prefix_label__', name.lower())
+            assert "__iri__" in nmspc, "missing attribute __iri__ for class %s" % name
+            iri = nmspc["__iri__"]
+            prefix_label = nmspc.get("__prefix_label__", name.lower())
             nmspc = {
-                k: (
-                    PrefixedName(iri, prefix_label, k)
-                    if v is PrefixedName else v
-                )
+                k: (PrefixedName(iri, prefix_label, k) if v is PrefixedName else v)
                 for k, v in nmspc.items()
             }
-            nmspc['__prefix_label__'] = prefix_label
+            nmspc["__prefix_label__"] = prefix_label
         return super(MetaNamespace, mcs).__new__(mcs, name, bases, nmspc)
 
     def __init__(cls, name, bases, nmspc):
@@ -277,7 +292,4 @@ class RDF(Namespace):
     XMLLiteral = PrefixedName
 
 
-escapers.extend([
-    (Node, lambda x: x.subject),
-    (RDFTerm, str),
-])
+escapers.extend([(Node, lambda x: x.subject), (RDFTerm, str)])

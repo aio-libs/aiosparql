@@ -63,6 +63,7 @@ class Client(AioSPARQLTestCase):
         app.router.add_post("/sparql", sparql_endpoint)
         app.router.add_post("/sparql-update", sparql_endpoint)
         app.router.add_route("*", "/crud", crud_endpoint)
+        app["state"] = {}
         return app
 
     @unittest_run_loop
@@ -205,6 +206,7 @@ class ClientCustomPrefixes(AioSPARQLTestCase):
         app = web.Application()
         app.router.add_post("/sparql", sparql_endpoint)
         app.router.add_post("/sparql-update", sparql_endpoint)
+        app["state"] = {}
         return app
 
     @unittest_run_loop

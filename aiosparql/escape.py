@@ -1,10 +1,14 @@
 from datetime import date, datetime, time
 from decimal import Decimal
 
-
 __all__ = [
-    "escape_any", "escape_string", "escape_datetime", "escape_date",
-    "escape_time", "escape_boolean", "escape_float",
+    "escape_any",
+    "escape_string",
+    "escape_datetime",
+    "escape_date",
+    "escape_time",
+    "escape_boolean",
+    "escape_float",
 ]
 
 
@@ -37,10 +41,10 @@ def escape_any(value):
 
 _string_replacements = [
     # always replace first the \ to avoid doubling the future ones
-    ('\\', '\\\\'),
+    ("\\", "\\\\"),
     ('"', '\\"'),
-    ('\n', "\\n"),
-    ('\r', "\\r"),
+    ("\n", "\\n"),
+    ("\r", "\\r"),
 ]
 
 

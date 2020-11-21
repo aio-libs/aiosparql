@@ -1,6 +1,5 @@
 import pytest
 
-
 sample_data = """\
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
@@ -46,7 +45,7 @@ async def test_update_insert_virtuoso(virtuoso_client):
     }
     """
     result = await virtuoso_client.query(select_query)
-    assert len(result['results']['bindings']) == 1
+    assert len(result["results"]["bindings"]) == 1
 
 
 @pytest.mark.asyncio
@@ -69,7 +68,7 @@ async def test_update_delete_virtuoso(virtuoso_client):
     }
     """
     result = await virtuoso_client.query(delete_query)
-    assert len(result['results']['bindings']) == 1
+    assert len(result["results"]["bindings"]) == 1
     select_query = """
     SELECT *
     FROM <urn:sparql:tests:insert:data>
@@ -78,7 +77,7 @@ async def test_update_delete_virtuoso(virtuoso_client):
     }
     """
     result = await virtuoso_client.query(select_query)
-    assert len(result['results']['bindings']) == 0
+    assert len(result["results"]["bindings"]) == 0
 
 
 @pytest.mark.asyncio
@@ -98,7 +97,7 @@ async def test_update_delete_jena(jena_client, truncate_jena):
     }
     """
     result = await jena_client.query(select_query)
-    assert len(result['results']['bindings']) == 1
+    assert len(result["results"]["bindings"]) == 1
     delete_query = """
     DELETE
     WHERE {
@@ -109,4 +108,4 @@ async def test_update_delete_jena(jena_client, truncate_jena):
     """
     result = await jena_client.update(delete_query)
     result = await jena_client.query(select_query)
-    assert len(result['results']['bindings']) == 0
+    assert len(result["results"]["bindings"]) == 0

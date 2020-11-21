@@ -1,13 +1,13 @@
-import aiohttp
 import unittest
 import uuid
-from aiohttp.test_utils import setup_test_loop, unittest_run_loop
 from os import environ as ENV
 
+import aiohttp
+from aiohttp.test_utils import setup_test_loop, unittest_run_loop
 from aiosparql.client import SPARQLClient
 from aiosparql.syntax import IRI
 
-__all__ = ['IntegrationTestCase', 'unittest_run_loop']
+__all__ = ["IntegrationTestCase", "unittest_run_loop"]
 
 
 class IntegrationTestCase(unittest.TestCase):
@@ -15,9 +15,11 @@ class IntegrationTestCase(unittest.TestCase):
         return SPARQLClient(
             ENV.get("SPARQL_ENDPOINT", "http://localhost:8890/sparql"),
             update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
-            crud_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT",
-                                  "http://localhost:8890/sparql-graph-crud"),
-            graph=self.graph)
+            crud_endpoint=ENV.get(
+                "SPARQL_UPDATE_ENDPOINT", "http://localhost:8890/sparql-graph-crud"
+            ),
+            graph=self.graph,
+        )
 
     def _generate_random_graph(self):
         return IRI("http://aiosparql.org/%s" % uuid.uuid4().hex[:7])

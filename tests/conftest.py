@@ -11,7 +11,7 @@ pytest_plugins = ["aiohttp.pytest_plugin", "pytester"]
 
 
 @pytest.fixture
-def virtuoso_client(loop):
+async def virtuoso_client(loop):
     _virtuoso_client = SPARQLClient(
         "http://localhost:8890/sparql",
         update_endpoint=ENV.get("SPARQL_UPDATE_ENDPOINT"),
@@ -20,11 +20,11 @@ def virtuoso_client(loop):
     )
     yield _virtuoso_client
     try:
-        loop.run_until_complete(_virtuoso_client.delete())
+        await _virtuoso_client.delete()
     except aiohttp.ClientResponseError as exc:
         if exc.status != 404:
             raise
-    loop.run_until_complete(_virtuoso_client.close())
+    await _virtuoso_client.close()
 
 
 @pytest.fixture

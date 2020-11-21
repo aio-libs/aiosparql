@@ -17,19 +17,19 @@ __all__ = ["SPARQLClient", "SPARQLRequestFailed", "SPARQLQueryFormatter"]
 logger = logging.getLogger(__name__)
 
 
-class SPARQLRequestFailed(aiohttp.client_exceptions.ClientResponseError):
+class SPARQLRequestFailed(aiohttp.ClientResponseError):
     def __init__(
         self,
         request_info,
         history,
         *,
-        code=0,
+        status=0,
         message="",
         headers=None,
         explanation=None
     ):
         super(SPARQLRequestFailed, self).__init__(
-            request_info, history, code=code, message=message, headers=headers
+            request_info, history, status=status, message=message, headers=headers
         )
         self.explanation = explanation
 
@@ -162,7 +162,7 @@ class SPARQLClient:
             raise SPARQLRequestFailed(
                 resp.request_info,
                 resp.history,
-                code=resp.status,
+                status=resp.status,
                 message=resp.reason,
                 explanation=explanation,
             )

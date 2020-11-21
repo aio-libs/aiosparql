@@ -28,10 +28,10 @@ async def virtuoso_client(loop):
 
 
 @pytest.fixture
-def jena_client(loop):
+async def jena_client(loop):
     _jena_client = SPARQLClient("http://localhost:3030/ds")
     yield _jena_client
-    loop.run_until_complete(_jena_client.close())
+    await _jena_client.close()
 
 
 @pytest.fixture

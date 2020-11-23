@@ -1,4 +1,4 @@
-black==19.3b0
+black==20.8b1
 pytest==5.2.2
 pytest-asyncio==0.10.0
 flake8==3.8.4

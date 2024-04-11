@@ -256,12 +256,11 @@ class SPARQLClient:
     def closed(self):
         return self._closed
 
-    @asyncio.coroutine
-    def close(self):
+    async def close(self):
         self._closed = True
         # NOTE: TypeError: object _CoroGuard can't be used in 'await'
         #       expression
-        yield from self.session.close()
+        await self.session.close()
 
     async def __aenter__(self):
         return self

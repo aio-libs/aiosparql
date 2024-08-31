@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import re
 from io import IOBase
@@ -26,7 +25,7 @@ class SPARQLRequestFailed(aiohttp.ClientResponseError):
         status=0,
         message="",
         headers=None,
-        explanation=None
+        explanation=None,
     ):
         super(SPARQLRequestFailed, self).__init__(
             request_info, history, status=status, message=message, headers=headers
@@ -54,7 +53,8 @@ class SPARQLQueryFormatter(Formatter):
     # e
     """
 
-    re_token = re.compile(r"((?:[^{]+|\{[^{]+|\{$)*)(?:\{\{((?:[^}]+|}[^}])*)\}\})?")
+    re_token = re.compile(
+        r"((?:[^{]+|\{[^{]+|\{$)*)(?:\{\{((?:[^}]+|}[^}])*)\}\})?")
     re_field = re.compile(r"(.*)(?:!([sra]))?(?::([^{}]*))?")
     re_indent = re.compile(r"(.*)^(\s*)$", flags=(re.M + re.S))
     indent = ""
@@ -74,14 +74,15 @@ class SPARQLQueryFormatter(Formatter):
                 if match.group(2) is None:
                     if match.end() != len(s):
                         raise Exception(
-                            "Not terminated token: %r" % s[match.end() :]  # noqa
+                            "Not terminated token: %r" % s[match.end():]  # noqa
                         )
                     yield (text, None, None, None)
                     break
                 else:
                     fmatch = self.re_field.fullmatch(match.group(2))
                     if not fmatch:
-                        raise Exception("Cannot parse token: %r" % match.group(2))
+                        raise Exception("Cannot parse token: %r" %
+                                        match.group(2))
                     yield (text, fmatch.group(1), fmatch.group(3), fmatch.group(2))
 
     def format_field(self, value, format_spec):
@@ -97,7 +98,7 @@ class SPARQLClient:
         crud_endpoint: Optional[str] = None,
         prefixes: Optional[Dict[str, IRI]] = None,
         graph: Optional[IRI] = None,
-        **kwargs
+        **kwargs,
     ):
         self._closed = False
         self._endpoint = endpoint
@@ -138,11 +139,11 @@ class SPARQLClient:
             )
         self._prefixes_header = "\n".join(header) + "\n"
 
-    def _prepare_query(self, query: str, *args, **keywords) -> dict:
+    def _prepare_query(self, query: str, *args, **kwargs) -> dict:
         lines = [self._prefixes_header]
         lines.extend([dedent(query).strip()])
         query_args = {"graph": self.graph} if self.graph else {}
-        query_args.update(keywords)
+        query_args.update(kwargs)
         query_formatter = SPARQLQueryFormatter()
         return query_formatter.vformat("\n".join(lines), args, query_args)
 
@@ -167,9 +168,9 @@ class SPARQLClient:
                 explanation=explanation,
             )
 
-    async def query(self, query: str, *args, **keywords) -> dict:
+    async def query(self, query: str, *args, **kwargs) -> dict:
         headers = {"Accept": "application/json"}
-        full_query = self._prepare_query(query, *args, **keywords)
+        full_query = self._prepare_query(query, *args, **kwargs)
         logger.debug(
             "Sending SPARQL query to %s: \n%s\n%s",
             self.endpoint,
@@ -182,9 +183,9 @@ class SPARQLClient:
             await self._raise_for_status(resp)
             return await resp.json()
 
-    async def update(self, query: str, *args, **keywords) -> dict:
+    async def update(self, query: str, *args, **kwargs) -> dict:
         headers = {"Accept": "application/json"}
-        full_query = self._prepare_query(query, *args, **keywords)
+        full_query = self._prepare_query(query, *args, **kwargs)
         logger.debug(
             "Sending SPARQL query to %s:\n%s\n%s",
             self.endpoint,
@@ -192,7 +193,7 @@ class SPARQLClient:
             "=" * 40,
         )
         async with self.session.post(
-            self.update_endpoint, data={"update": full_query}, headers=headers
+            self.update_endpoint, data={"update": full_query}, headers=headers, **kwargs
         ) as resp:
             await self._raise_for_status(resp)
             # NOTE: some databases may still return HTML instead of JSON
@@ -258,8 +259,6 @@ class SPARQLClient:
 
     async def close(self):
         self._closed = True
-        # NOTE: TypeError: object _CoroGuard can't be used in 'await'
-        #       expression
         await self.session.close()
 
     async def __aenter__(self):
